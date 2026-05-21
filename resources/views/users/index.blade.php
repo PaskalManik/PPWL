@@ -5,15 +5,23 @@
 @section('page-title', 'Users Management')
 
 @section('content')
-    <div class="flex justify-between items-center mb-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 rounded-lg shadow">
+    <div
+        class="flex justify-between items-center mb-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 rounded-lg shadow">
         <h2 class="text-2xl font-bold">Users</h2>
         <div>
-            <a href="{{ route('users.create') }}" class="bg-white text-purple-500 hover:bg-gray-200 px-4 py-2 rounded shadow font-semibold">
+            <a href="{{ route('users.create') }}"
+                class="bg-white text-purple-500 hover:bg-gray-200 px-4 py-2 rounded shadow font-semibold">
                 <i class="fas fa-plus mr-2"></i> Add User
             </a>
         </div>
     </div>
 
+    @if (session('success'))
+        <div id="alert-success"
+            class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-100 transition-opacity duration-500" role="alert">
+            <span class="font-medium">{{ session('success') }}</span>
+        </div>   
+    @endif
     <!-- Users Table -->
     <div class="bg-white rounded-lg shadow overflow-hidden">
         <div class="p-4 bg-gradient-to-r from-gray-100 to-gray-300 border-b border-gray-200">
@@ -32,45 +40,36 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    <tr class="hover:bg-gray-100">
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900">1</td>
-                        <td class="px-6 py-4 text-sm text-gray-700">John Doe</td>
-                        <td class="px-6 py-4 text-sm text-gray-700">john@example.com</td>
-                        <td class="px-6 py-4 text-sm text-gray-700">Admin</td>
-                        <td class="px-6 py-4">
-                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
-                        </td>
-                        <td class="px-6 py-4 text-sm font-medium">
-                            <a href="{{ route('users.edit')}}" class="text-blue-600 hover:text-blue-800 mr-3">Edit</a>
-                            <a href="#" class="text-red-600 hover:text-red-800">Delete</a>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-100">
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900">2</td>
-                        <td class="px-6 py-4 text-sm text-gray-700">Jane Smith</td>
-                        <td class="px-6 py-4 text-sm text-gray-700">jane@example.com</td>
-                        <td class="px-6 py-4 text-sm text-gray-700">Editor</td>
-                        <td class="px-6 py-4">
-                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
-                        </td>
-                        <td class="px-6 py-4 text-sm font-medium">
-                            <a href="{{ route('users.edit')}}" class="text-blue-600 hover:text-blue-800 mr-3">Edit</a>
-                            <a href="#" class="text-red-600 hover:text-red-800">Delete</a>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-100">
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900">3</td>
-                        <td class="px-6 py-4 text-sm text-gray-700">Robert Johnson</td>
-                        <td class="px-6 py-4 text-sm text-gray-700">robert@example.com</td>
-                        <td class="px-6 py-4 text-sm text-gray-700">User</td>
-                        <td class="px-6 py-4">
-                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Inactive</span>
-                        </td>
-                        <td class="px-6 py-4 text-sm font-medium">
-                            <a href="{{ route('users.edit')}}" class="text-blue-600 hover:text-blue-800 mr-3">Edit</a>
-                            <a href="#" class="text-red-600 hover:text-red-800">Delete</a>
-                        </td>
-                    </tr>
+                    @foreach ($users as $user)
+                        <tr class="hover:bg-gray-100">
+                            <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $user->id }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-700">{{ $user->name }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-700">{{ $user->email }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-700">{{ $user->role }}</td>
+                            @if ($user->status == 1)
+                                <td class="px-6 py-4">
+                                    <span
+                                        class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                                </td>
+                            @else
+                                <td class="px-6 py-4">
+                                    <span
+                                        class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Inactive</span>
+                                </td>
+                            @endif
+                            <td class="px-6 py-4 text-sm font-medium">
+                                <a href="{{ route('users.edit', $user->id) }}"
+                                    class="text-blue-600 hover:text-blue-800 mr-3">Edit</a>
+                                <form action="{{ route('users.destroy', $user->id) }}" method="POST"
+                                    style="display: inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-800"
+                                        onclick="return confirm('Are you sure you want to delete this user?')">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
